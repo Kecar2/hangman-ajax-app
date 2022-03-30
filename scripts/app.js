@@ -6,10 +6,10 @@
 
 // Alternativa: encuentrame todo lo que NO sea un espacio en blanco, y cámbialo por un *
 //let movieGuess = movie.replaceAll(/[^\s]/g, "*");
-STATE.reset("matrix reloaded");
+reset();
 
 // Recorremos el string. nextLetter vale a cada iteración una letra del string
-DOM.updateGuessedWord(STATE.movieGuess);
+// DOM.updateGuessedWord(STATE.movieGuess);
 
 // El FOR anterior es equivalente a:
 // for (let i = 0; i < movieGuess.length; i++) {
@@ -29,7 +29,7 @@ DOM.updateGuessedWord(STATE.movieGuess);
  * 
  */
 
-document.addEventListener("keyup", function (e) {
+document.addEventListener("keyup", async function (e) {
 
     if (STATE.attempts == 0 || STATE.movieGuess == STATE.movie) {
         return;
@@ -84,8 +84,22 @@ document.addEventListener("keyup", function (e) {
         const audio = new Audio('../sounds/win.wav');
         audio.play();
         DOM.showWinnerMessage();
+        const imageMovie = await REQUEST.getImageFromMovie(STATE.movie);
+        DOM.displayMovieImage(imageMovie);
     }
 
     DOM.updateGuessedWord(STATE.movieGuess);
 })
+
+document.querySelector("#reset").addEventListener("click", reset);
+
+function reset() {
+    // Invocamos la función getMovieFromJson
+    REQUEST.getMovieFromJson((movie) => {
+        STATE.reset(movie);
+        console.log(movie);
+        DOM.updateGuessedWord(STATE.movieGuess);
+        DOM.resetUX();
+    });
+}
 
